@@ -27,11 +27,16 @@ v3_max = 255    # Maximum V value
 #    RGB or HSV
 filter = 'HSV'  # Use HSV to describe pixel color values
 
-IR1 = 'P9_23'
-IR2 = 'P9_28'
+# IR GPIO inputs
+IR1 = 'P9_28'
+IR2 = 'GP0_5'
+IR3 = 'P9_23'
+IR4 = 'GP0_3'
 
 GPIO.setup(IR1, GPIO.IN)
 GPIO.setup(IR2, GPIO.IN)
+GPIO.setup(IR3, GPIO.IN)
+GPIO.setup(IR4, GPIO.IN)
 
 def main():
 
@@ -109,37 +114,38 @@ def main():
 
                         dir = "driving"
 
-                        if radius >= tp:    # Too Close
-
+                        if radius > tp+2:    # Too Close
+                        {
                             case = "too close"
                             duty = -1 * ((radius-tp)/(tc-tp))
+                        }
 
-
-                        elif radius < tp:   # Too Far
-
+                        elif radius < tp-2:   # Too Far
+                        {
                             case = "too far"
                             duty = 1 - ((radius - tf)/(tp - tf))
                             duty = scale_d * duty
-                            
+                        }
                         # added this elif
-                        elif (radius < (tp+2) && radius > (tp-2) && GPIO.input(IR2) == 0)
-                        
+                        elif (radius <= (tp+2) && radius >= (tp-2) && GPIO.input(IR2) == 0):
+                        {
                             case = "spray"
                             duty = 0
                             motor.set(motor_l, 0)
                             motor.set(motor_r, 0)
                             
-                            while (radius < (tp+2) && radius > (tp-2))
+                            while (radius <= (tp+2) && radius >= (tp-2) && GPIO.input(IR2) == 0):
                             {
-                                spraying = false
-                                if (spraying == false)
+                                spraying = 0
+                                if (spraying == 0):
                                 {
                                     motor.set(motor_actuation, 0.2)
                                     time.sleep(0.3)
                                     motor.set(motor_actuation, 0)
-                                    sparying = true
+                                    sparying = 1;
                                 }
                             }
+                        }
 
                         duty_r = duty
                         duty_l = duty
@@ -177,7 +183,27 @@ def main():
                     motor.set(motor_l, duty_l)
                     motor.set(motor_r, duty_r)
                     
-                else:
+                elif (len(cnts) == 0 && (GPIO.input(IR1) == 0 || GPIO.input(IR3) == 0 || GPIO.input(IR4) == 0)):
+                {
+                    while (GPIO.input(IR2) == 1):
+                    {
+                        if (GPIO.input(IR1) == 0): # right side
+                        {
+                            motor.set(motor_l, 0.6)
+                            motor.set(motor_r, -0.6)
+                        }
+                        if (GPIO.input(IR3) == 0): # front-left side
+                        {
+                            motor.set(motor_l, -0.3)
+                            motor.set(motor_r, 0.3)
+                        }
+                        if (GPIO.input(IR4) == 0): # left side
+                        {
+                            motor.set(motor_l, -0.6)
+                            motor.set(motor_r, 0.6)
+                        } 
+                    }
+                }
                     
 
                 # Set motor duty cycles
