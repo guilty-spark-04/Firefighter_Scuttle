@@ -2,6 +2,7 @@ import Adafruit_BBIO.GPIO as GPIO
 import time
 import signal
 import L2_log as log
+import L3_spray as spray
 print("loading libraries for color tracking...")
 import cv2              # For image capture and processing
 import argparse         # For fetching user arguments
@@ -57,6 +58,15 @@ def main():
 
     duty_l = 0 # initialize motor with zero duty cycle
     duty_r = 0 # initialize motor with zero duty cycle
+    
+    scale_t = 1.3	# a scaling factor for speeds
+    scale_d = 1.3	# a scaling factor for speeds
+
+    # 4 CARLOS - set motor names 
+    motor_actuation = 4 # actuator
+    motor_spin = 3 # spin
+    motor_r = 2 # Right Motor
+    motor_l = 1 # left motor
 
     print("initializing rcpy...")
     rcpy.set_state(rcpy.RUNNING)        # initialize rcpy
@@ -67,15 +77,6 @@ def main():
         while rcpy.get_state() != rcpy.EXITING:
 
             if rcpy.get_state() == rcpy.RUNNING:
-
-                scale_t = 1.3	# a scaling factor for speeds
-                scale_d = 1.3	# a scaling factor for speeds
-
-                # 4 CARLOS - set motor names 
-                motor_actuation = 4 # actuator
-                motor_spin = 3 # spin
-                motor_r = 2 # Right Motor
-                motor_l = 1 # left motor
 
                 ret, image = camera.read()  # Get image from camera
 
@@ -136,14 +137,7 @@ def main():
                             
                             while (radius <= (tp+2) && radius >= (tp-2) && GPIO.input(IR2) == 0):
                             {
-                                spraying = 0
-                                if (spraying == 0):
-                                {
-                                    motor.set(motor_actuation, 0.2)
-                                    time.sleep(0.3)
-                                    motor.set(motor_actuation, 0)
-                                    sparying = 1;
-                                }
+                                spary.sprayCan()
                             }
                         }
 
@@ -191,16 +185,19 @@ def main():
                         {
                             motor.set(motor_l, 0.6)
                             motor.set(motor_r, -0.6)
+                            time.sleep(1.8)
                         }
                         if (GPIO.input(IR3) == 0): # front-left side
                         {
                             motor.set(motor_l, -0.3)
                             motor.set(motor_r, 0.3)
+                            time.sleep(0.6)
                         }
                         if (GPIO.input(IR4) == 0): # left side
                         {
                             motor.set(motor_l, -0.6)
                             motor.set(motor_r, 0.6)
+                            time.sleep(1.8)
                         } 
                     }
                 }
