@@ -29,7 +29,6 @@ def NodeRed2(values):                                       # this function take
     txt.close()
     txt2.close()
 
-
 # A function for sending 1 value to a log file of specified name
 def uniqueFile(value, fileName):                            # this function takes a 2-element array called val
     txt = open("/home/debian/basics/" + fileName, 'w+')     # file with specified name
