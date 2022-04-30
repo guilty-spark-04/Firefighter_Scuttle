@@ -116,30 +116,24 @@ def main():
                         dir = "driving"
 
                         if radius > tp+2:    # Too Close
-                        {
                             case = "too close"
                             duty = -1 * ((radius-tp)/(tc-tp))
-                        }
+                        
 
                         elif radius < tp-2:   # Too Far
-                        {
                             case = "too far"
                             duty = 1 - ((radius - tf)/(tp - tf))
                             duty = scale_d * duty
-                        }
+                        
                         # added this elif
                         elif (radius <= (tp+2) && radius >= (tp-2) && GPIO.input(IR2) == 0):
-                        {
                             case = "spray"
                             duty = 0
                             motor.set(motor_l, 0)
                             motor.set(motor_r, 0)
                             
                             while (radius <= (tp+2) && radius >= (tp-2) && GPIO.input(IR2) == 0):
-                            {
                                 spary.sprayCan()
-                            }
-                        }
 
                         duty_r = duty
                         duty_l = duty
@@ -178,30 +172,19 @@ def main():
                     motor.set(motor_r, duty_r)
                     
                 elif (len(cnts) == 0 && (GPIO.input(IR1) == 0 || GPIO.input(IR3) == 0 || GPIO.input(IR4) == 0)):
-                {
                     while (GPIO.input(IR2) == 1):
-                    {
                         if (GPIO.input(IR1) == 0): # right side
-                        {
                             motor.set(motor_l, 0.6)
                             motor.set(motor_r, -0.6)
                             time.sleep(1.8)
-                        }
                         if (GPIO.input(IR3) == 0): # front-left side
-                        {
                             motor.set(motor_l, -0.3)
                             motor.set(motor_r, 0.3)
                             time.sleep(0.6)
-                        }
                         if (GPIO.input(IR4) == 0): # left side
-                        {
                             motor.set(motor_l, -0.6)
                             motor.set(motor_r, 0.6)
                             time.sleep(1.8)
-                        } 
-                    }
-                }
-                    
 
                 # Set motor duty cycles
                 motor.set(motor_l, duty_l)
